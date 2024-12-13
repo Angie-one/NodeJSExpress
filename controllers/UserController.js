@@ -20,7 +20,7 @@ function getUser(req, res, username) {
             console.error("Erreur lors de la récupération de l'utilisateur :", err.message);
             res.status(500).send("Erreur lors de la récupération de l'utilisateur");
         } else if (row) {
-            res.send(userView(row));
+            res.send(userView(req, row));
         } else {
             res.status(404).send("Utilisateur non trouvé");
         }
@@ -115,14 +115,14 @@ function addProduit (req, res) {
     console.log("Prix :", prix);
 
     const newProduit =  new Produit (null, titre, description, prix)
-    const query = 'INSERT INTO produit (titre, description, prix) VALUES (?, ?, ?)';
-    dbProduit.run(query, [newProduit.titre, newProduit.description, newProduit.prix], function(err) {
+    const query = 'INSERT INTO produits (titre,image, description, prix) VALUES (?, ?, ?, ?)';
+    dbProduit.run(query, [newProduit.titre,newProduit.image, newProduit.description, newProduit.prix], function(err) {
         if (err) {
             console.log("erreur d'enregistrement du produit", err.message)
             res.status(500).send('erreur d\'enregistrement non trouvé')
         }else {
             console.log("enregistrement effectué :", newProduit)
-            res.send("produit enregistrée! enregistrer un nouveau produit <a href='/produit'>ici</a>")
+            res.send("produit enregistrée! enregistrer un nouveau produit <a href='/produit'>ici</a> retourner à la page accueil <a href='/user?username=" + username + "'>mon compte</a> ")
         }
     }) 
 }
