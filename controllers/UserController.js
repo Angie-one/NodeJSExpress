@@ -86,9 +86,9 @@ function register(req, res) {
             // Déterminer le rôle de l'utilisateur
             const role = username === 'admin' ? 'admin' : 'user';
 
-            const newUser = new User(null, username, hash);
-            const query = 'INSERT INTO users (username, password) VALUES (?, ?)';
-            db.run(query, [newUser.username, newUser.password], function(err) {
+            const newUser = new User(null, username, hash, role);
+            const query = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
+            db.run(query, [newUser.username, newUser.password, newUser.role], function(err) {
                 if (err) {
                     console.error("Erreur lors de l'enregistrement :", err.message);
                     res.status(500).send("Erreur lors de l'enregistrement");
