@@ -2,6 +2,7 @@ const express = require('express');
 //const User = require('./models/User');
 const {getUser, showLogin, traiteLogin, showRegister, register, showProduit, addProduit, headerView} = require('./controllers/UserController');
 const bodyParser = require ('body-parser');
+const produitView = require('./views/produitView');
 const dotenv = require('dotenv').config();
 
 //dotenv.config();
@@ -36,14 +37,7 @@ app.get('/register', async (req, res) => {
     }
 });
 
-app.get('/produits', async (req, res) => {
-    try {
-        showProduit(req, res);
-    } catch (error) {
-        console.log("erreur dans l'ajout du produit :", error.message);
-        res.status(500).send(` ${headerView()} <br> Veuillez vous connecter!`)
-    }
-});
+
 app.get('/headerView', async (req, res) => {
     try {
         headerView(req, res);
@@ -53,14 +47,18 @@ app.get('/headerView', async (req, res) => {
     }
 });
 
-app.get ('/produit', async (req, res) => {
-    try {
-        addProduit(req, res);
-    }catch (error) {
-        console.log('erreur enregistrment produit :', error);
-        res.status(500).send("Erreur lors de l'enregistrement");
-    }
-});
+
+// app.get('/produit', async (req, res) => {
+//     try {
+//         showProduit(req, res);
+//     }catch (error) {
+//         console.log('erreur enregistrment produit :', error);
+//         res.status(500).send("Erreur lors de l'enregistrement");
+//     }
+// });
+app.get('/produit', (req, res) => {showProduit(req, res);});
+
+app.post('/produit', (req, res,) => {addProduit(req, res,); });
 
 app.post('/login', async (req, res) => {
     try {
@@ -80,23 +78,9 @@ app.post('/register', async (req, res) => {
     }
 });
 
-app.post ('/produit', async (req, res) => {
-    try {
-        addProduit(req, res);
-    }catch (error) {
-        console.log('erreur enregistrment produit :', error);
-        res.status(500).send("Erreur lors de l'enregistrement");
-    }
-});
 
-app.post ('/headerView' , async (req, res) => {
-    try {
-        headerView(req, res);
-    } catch (error) {
-        res.status(500).send ('errueur ')
-    }
-})
 
+app.get('/header', (req, res) => {headerView(req, res);});
 
 
 app.listen (3000, ()=> {

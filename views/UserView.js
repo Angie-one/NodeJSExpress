@@ -9,8 +9,8 @@ function userView(user, produits){
             produitList += `
             <div>
                 <p>Titre : ${produit.titre}</p><br>
-                <p>Image : ${produit.image}</p><br>
-                <p>Description : ${produit.description}</p><br>
+                <p>Image : ${produit.image}</p>
+                <p>Description : ${produit.description}</p>
                 <p>Prix : ${produit.prix}</p><br>
             </div>`;
         });

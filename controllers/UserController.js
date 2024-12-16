@@ -116,21 +116,22 @@ function showProduit(req, res) {
     res.send(ProduitView());
 }
 
-function addProduit (req, res) {
+function addProduit (req, res, produit) {
+    console.log(produit)
     const { titre, description, prix } = req.body;
     
     console.log("Titre :", titre);
     console.log("Description :", description);
     console.log("Prix :", prix);
 
-    const newProduit =  new Produit (null, titre, description, prix)
+    const newproduit =  new Produit (null, titre, description, prix)
     const query = 'INSERT INTO produits (titre,image, description, prix) VALUES (?, ?, ?, ?)';
-    dbProduit.run(query, [newProduit.titre,newProduit.image, newProduit.description, newProduit.prix], function(err) {
+    dbProduit.run(query, [newproduit.titre,newproduit.image, newproduit.description, newproduit.prix], function(err) {
         if (err) {
             console.log("erreur d'enregistrement du produit", err.message)
             res.status(500).send('erreur d\'enregistrement non trouvé')
         }else {
-            console.log("enregistrement effectué :", newProduit)
+            console.log("enregistrement effectué :", newproduit)
             res.send("produit enregistrée! enregistrer un nouveau produit <a href='/produit'>ici</a> retourner à la page accueil <a href='/user'>mon ")
         }
     }) 

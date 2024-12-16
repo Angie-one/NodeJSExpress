@@ -29,11 +29,12 @@ function headerView() {
     <body>
     <nav>
         <a href="/login">Mon compte</a>
-        <a href="/addProduit">Créer une annonce</a>
+        <a href="/produit">Créer une annonce</a>
         <a href="/register">Inscription</a>
     </nav>
     <h1>AppResale l'appli utile </h1>
     `;
 }
+
 
 module.exports=headerView
