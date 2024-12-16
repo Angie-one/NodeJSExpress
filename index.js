@@ -36,12 +36,12 @@ app.get('/register', async (req, res) => {
     }
 });
 
-app.get('/produit', async (req, res) => {
+app.get('/produits', async (req, res) => {
     try {
         showProduit(req, res);
     } catch (error) {
         console.log("erreur dans l'ajout du produit :", error.message);
-        res.status(500).send('erreur connexion!')
+        res.status(500).send(` ${headerView()} <br> Veuillez vous connecter!`)
     }
 });
 app.get('/headerView', async (req, res) => {
@@ -50,6 +50,15 @@ app.get('/headerView', async (req, res) => {
     }catch (error) {
         console.log('erreur du header :' , error.message)
         res.status(500).send('erreur affichage')
+    }
+});
+
+app.get ('/produit', async (req, res) => {
+    try {
+        addProduit(req, res);
+    }catch (error) {
+        console.log('erreur enregistrment produit :', error);
+        res.status(500).send("Erreur lors de l'enregistrement");
     }
 });
 

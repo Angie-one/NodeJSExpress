@@ -7,7 +7,7 @@ function loginView(){
         <input type="password" name="password" placeholder="Entrez votre mot de passe"></input><br>
         <input type="submit"></input>
     </form>
-    <a href='/register'>page Inscription</a>
+    <p>Pas encore inscrit ? Cliquer sur le lien :<a href='/register'>Inscription Gratuite</a> </p>
     </body></html>`;
 }
     

@@ -12,7 +12,7 @@ function headerView() {
             nav a {
                 float: left;
                 display: block;
-                color: #f2f2f2;
+                color: #808080;
                 text-align: center;
                 padding: 14px 16px;
                 text-decoration: none;
@@ -21,14 +21,18 @@ function headerView() {
                 background-color: #ddd;
                 color: black;
             }
+            h1 {
+                text-align:center;
+            }    
         </style>
     </head>
     <body>
     <nav>
+        <a href="/login">Mon compte</a>
+        <a href="/addProduit">Créer une annonce</a>
         <a href="/register">Inscription</a>
-        <a href="/user">Mon compte</a>
-        <a href="/produit">Créer une annonce</a>
     </nav>
+    <h1>AppResale l'appli utile </h1>
     `;
 }
 

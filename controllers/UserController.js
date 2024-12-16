@@ -20,8 +20,16 @@ function getUser(req, res, username) {
         if (err) {
             console.error("Erreur lors de la récupération de l'utilisateur :", err.message);
             res.status(500).send("Erreur lors de la récupération de l'utilisateur");
-        } else if (row, username) {
-            res.send(userView(req, row, username));
+        } else if (row) {
+            const produitQuery = 'SELECT * FROM produits';
+            dbProduit.all(produitQuery, (err, produits) => {
+                if (err) {
+                    console.error("Erreur lors de la récupération des produits :", err.message);
+                    res.status(500).send("Erreur lors de la récupération des produits");
+                } else {
+                    res.send(userView(row, produits));
+                }
+            });
         } else {
             res.status(404).send("Utilisateur non trouvé");
         }
@@ -49,7 +57,7 @@ function traiteLogin(req, res) {
                 } else if (result) {
                     const token = jwt.sign({ username: row.username }, secretKey, { expiresIn: '1h' });
                     console.log("Token généré :", token);
-                    res.send("Bienvenue !! <a href='/register'>s'enregistrer</a> <a href='/user?username=" + username + "'>utilisateur</a>");
+                    getUser(req, res, username);
                     
                 } else {
                     console.log("Mot de passe incorrect pour l'utilisateur :", username);
