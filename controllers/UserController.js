@@ -4,6 +4,7 @@ const userView = require('../views/UserView');
 const loginView = require('../views/loginView');
 const registerView = require('../views/registerView');
 const ProduitView = require('../views/produitView');
+const headerView = require('../views/headerView');
 
 const db = require('../db');
 const dbProduit = require('../db');
@@ -19,8 +20,8 @@ function getUser(req, res, username) {
         if (err) {
             console.error("Erreur lors de la récupération de l'utilisateur :", err.message);
             res.status(500).send("Erreur lors de la récupération de l'utilisateur");
-        } else if (row) {
-            res.send(userView(req, row));
+        } else if (row, username) {
+            res.send(userView(req, row, username));
         } else {
             res.status(404).send("Utilisateur non trouvé");
         }
@@ -122,9 +123,9 @@ function addProduit (req, res) {
             res.status(500).send('erreur d\'enregistrement non trouvé')
         }else {
             console.log("enregistrement effectué :", newProduit)
-            res.send("produit enregistrée! enregistrer un nouveau produit <a href='/produit'>ici</a> retourner à la page accueil <a href='/user?username=" + username + "'>mon compte</a> ")
+            res.send("produit enregistrée! enregistrer un nouveau produit <a href='/produit'>ici</a> retourner à la page accueil <a href='/user'>mon ")
         }
     }) 
 }
 
-module.exports = { getUser, showLogin, traiteLogin, showRegister, register, showProduit, addProduit };
+module.exports = { getUser, showLogin, traiteLogin, showRegister, register, showProduit, addProduit, headerView };

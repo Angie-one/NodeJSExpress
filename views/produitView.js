@@ -1,4 +1,6 @@
-function produitView() {
+const headerView = require('./headerView');
+
+function produitView(username) {
     const utilisateur = username.name; 
    // const entete = `Ajouter votre article`;
      
