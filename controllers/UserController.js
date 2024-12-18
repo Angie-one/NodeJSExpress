@@ -22,14 +22,22 @@ function getUser(req, res, username) {
             res.status(500).send("Erreur lors de la récupération de l'utilisateur");
         } else if (row) {
             const produitQuery = 'SELECT * FROM produits';
-            dbProduit.all(produitQuery, (err, produits) => {
+            const userProduitQuery = 'SELECT * FROM produits WHERE username_id = ?';
+            db.all(produitQuery, (err, produits) => {
                 if (err) {
                     console.error("Erreur lors de la récupération des produits :", err.message);
                     res.status(500).send("Erreur lors de la récupération des produits");
                 } else {
-                    res.send(userView(row, produits));
+                    db.all(userProduitQuery, [row.id], (err, userProduits) => {
+                        if (err) {
+                            console.error("Erreur lors de la récupération des produits de l'utilisateur :", err.message);
+                            res.status(500).send("Erreur lors de la récupération des produits de l'utilisateur");
+                }else {
+                    res.send(userView(row, produits, row.role));
                 }
             });
+                }
+                });
         } else {
             res.status(404).send("Utilisateur non trouvé");
         }
@@ -55,10 +63,14 @@ function traiteLogin(req, res) {
                     console.error("Erreur lors de la comparaison du mot de passe :", err.message);
                     res.status(500).send("Erreur lors de la connexion");
                 } else if (result) {
-                    const token = jwt.sign({ username: row.username }, secretKey, { expiresIn: '1h' });
+                    const token = jwt.sign({ username: row.username, role: row.role }, secretKey, { expiresIn: '1h' });
                     console.log("Token généré :", token);
-                    getUser(req, res, username);
-                    
+                    res.cookie('token', token, { httpOnly: true });
+                    if (row.role === 'admin') {
+                        res.redirect('/gestion');
+                    } else {
+                        getUser(req, res, username);
+                    }
                 } else {
                     console.log("Mot de passe incorrect pour l'utilisateur :", username);
                     res.send("Connexion échouée");
@@ -70,6 +82,7 @@ function traiteLogin(req, res) {
         }
     });
 }
+
 
 function showRegister(req, res) {
     res.send(registerView());
@@ -126,7 +139,7 @@ function addProduit (req, res, produit) {
 
     const newproduit =  new Produit (null, titre, description, prix)
     const query = 'INSERT INTO produits (titre,image, description, prix) VALUES (?, ?, ?, ?)';
-    dbProduit.run(query, [newproduit.titre,newproduit.image, newproduit.description, newproduit.prix], function(err) {
+    db.run(query, [newproduit.titre,newproduit.image, newproduit.description, newproduit.prix], function(err) {
         if (err) {
             console.log("erreur d'enregistrement du produit", err.message)
             res.status(500).send('erreur d\'enregistrement non trouvé')
@@ -135,6 +148,31 @@ function addProduit (req, res, produit) {
             res.send("produit enregistrée! enregistrer un nouveau produit <a href='/produit'>ici</a> retourner à la page accueil <a href='/user'>mon ")
         }
     }) 
+};
+
+function adminDeleteProduit(req, res, produitId) {
+    const query = 'DELETE FROM produits WHERE id = ?';
+    db.run(query, [produitId], function(err) {
+        if (err) {
+            console.error("Erreur lors de la suppression par l'administrateur :", err.message);
+            res.status(500).send("Erreur lors de la suppression par l'administrateur");
+        } else {
+            res.send("Annonce supprimée avec succès");
+        }
+    });
 }
 
-module.exports = { getUser, showLogin, traiteLogin, showRegister, register, showProduit, addProduit, headerView };
+function validateProduit (req, res, username, produitId) {
+    const query ='UPDATE produits WHERE id = ? AND statut = "en attente"';
+    db.run(query, [produitId], [username], function(err) {
+        if(err) {
+            console.log('annonce non trouvée :', err.message)
+            res.status(500).send('Erreur de validation')
+        }else {
+            res.send("annonce validée")
+        }
+    })
+}
+
+
+module.exports = { getUser, showLogin, traiteLogin, showRegister, register, showProduit, addProduit, headerView, adminDeleteProduit, validateProduit };

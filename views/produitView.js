@@ -12,5 +12,5 @@ function produitView() {
     </body></html>`
 }
 
-module.exports = produitView;
+module.exports = produitView, headerView;
 

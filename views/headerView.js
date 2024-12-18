@@ -1,10 +1,15 @@
-function headerView() {
+function headerView(role='') {
+    const adminLink = role === 'admin' ?'<a href="/gestion">Gestion Admin</a>':'';
+    
     return `
     <html>
     <head>
     <meta charset="UTF-8">
         <title>AppResale</title>
         <style>
+            body{
+                background-color:rgb(108, 112, 108);
+            }
             nav {
                 background-color: #90EE90;
                 overflow: hidden;
@@ -31,10 +36,30 @@ function headerView() {
         <a href="/login">Mon compte</a>
         <a href="/produit">Créer une annonce</a>
         <a href="/register">Inscription</a>
+         ${adminLink}
     </nav>
     <h1>AppResale l'appli utile </h1>
     `;
 }
+function gestionView() {
+    const query = 'SELECT * FROM produits WHERE status = "requested"';
+    db.all(query, (err, rows) => {
+        if (err) {
+            console.error("Erreur lors de la récupération des demandes de suppression :", err.message);
+            return '';
+        }
+        let requestedDeletions = '';
+        rows.forEach(row => {
+            requestedDeletions += `<p>Annonce ID: ${row.id} - Titre: ${row.titre} - <button onclick="deleteProduit(${row.id})">Supprimer</button></p>`;
+        });
+        return `${headerView('admin')}
+        <h1>Gestion Admin</h1>
+        <h2>Demandes de suppression</h2>
+        ${requestedDeletions}
+        </body></html>`;
+    });
+}
 
 
-module.exports=headerView
+
+module.exports=headerView, gestionView
