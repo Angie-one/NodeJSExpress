@@ -5,7 +5,7 @@ const bodyParser = require ('body-parser');
 const produitView = require('./views/produitView');
 const dotenv = require('dotenv').config();
 const cookieParser = require('cookie-parser');
-const authenticateToken = require('./middleware/authMiddleware');
+const authenticateToken = require('./middleware/authentification');
 const gestionView = require('./views/AdminView');
 
 const app = express()

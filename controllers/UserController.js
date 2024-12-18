@@ -7,11 +7,10 @@ const ProduitView = require('../views/produitView');
 const headerView = require('../views/headerView');
 
 const db = require('../db');
-const dbProduit = require('../db');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const secretKey = 'CodeuseFoireuse';  process.env.JWT_SECRET;
+const secretKey = process.env.JWT_SECRET;
 
 function getUser(req, res, username) {
     console.log('Paramètre requête', username);
@@ -82,6 +81,7 @@ function traiteLogin(req, res) {
         }
     });
 }
+
 
 
 function showRegister(req, res) {
