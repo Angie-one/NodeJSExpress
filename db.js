@@ -12,7 +12,7 @@ const dbProduit = new sqlite3.Database('./database.sqlite', (err) => {
     if (err) {
         console.error('Erreur de connexion :', err.message);
     } else {
-        dbProduit.run('CREATE TABLE IF NOT EXISTS produits (id INTEGER PRIMARY KEY AUTOINCREMENT, titre TEXT NOT NULL, description TEXT NOT NULL,image TEXT, prix INT NOT NULL,statut TEXT DEFAULT "en attente", username_id INTEGER, FOREIGN KEY(username_id) REFERENCES users(id)")', (err) => {
+        dbProduit.run('CREATE TABLE IF NOT EXISTS produits (id INTEGER PRIMARY KEY AUTOINCREMENT, titre TEXT NOT NULL, description TEXT NOT NULL,image TEXT, prix INT NOT NULL,statut TEXT DEFAULT "en attente")', (err) => {
             if (err) {
                 console.error('Erreur lors de la création de la table produits :', err.message);
             } else {

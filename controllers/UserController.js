@@ -5,12 +5,14 @@ const loginView = require('../views/loginView');
 const registerView = require('../views/registerView');
 const ProduitView = require('../views/produitView');
 const headerView = require('../views/headerView');
+const gestionView = require('../views/AdminView');
 
 const db = require('../db');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const secretKey = process.env.JWT_SECRET;
+
+const secretKey = 'codeuseFoireuse' ||process.env.JWT_SECRET;
 
 function getUser(req, res, username) {
     console.log('Paramètre requête', username);
@@ -21,22 +23,18 @@ function getUser(req, res, username) {
             res.status(500).send("Erreur lors de la récupération de l'utilisateur");
         } else if (row) {
             const produitQuery = 'SELECT * FROM produits';
-            const userProduitQuery = 'SELECT * FROM produits WHERE username_id = ?';
+            
             db.all(produitQuery, (err, produits) => {
                 if (err) {
                     console.error("Erreur lors de la récupération des produits :", err.message);
                     res.status(500).send("Erreur lors de la récupération des produits");
-                } else {
-                    db.all(userProduitQuery, [row.id], (err, userProduits) => {
-                        if (err) {
-                            console.error("Erreur lors de la récupération des produits de l'utilisateur :", err.message);
-                            res.status(500).send("Erreur lors de la récupération des produits de l'utilisateur");
-                }else {
+                }
+                else {
                     res.send(userView(row, produits, row.role));
                 }
-            });
-                }
-                });
+         } );
+                
+                
         } else {
             res.status(404).send("Utilisateur non trouvé");
         }
@@ -64,11 +62,13 @@ function traiteLogin(req, res) {
                 } else if (result) {
                     const token = jwt.sign({ username: row.username, role: row.role }, secretKey, { expiresIn: '1h' });
                     console.log("Token généré :", token);
-                    res.cookie('token', token, { httpOnly: true });
+                    res.cookie('token', token, { httpOnly: true, secure :false });
                     if (row.role === 'admin') {
-                        res.redirect('/gestion');
+                        getAdmin(req, res, username)
+                        console.log('vue admin')
                     } else {
                         getUser(req, res, username);
+                        console.log('vue user')
                     }
                 } else {
                     console.log("Mot de passe incorrect pour l'utilisateur :", username);
@@ -90,6 +90,8 @@ function showRegister(req, res) {
 
 function register(req, res) {
     const { username, password } = req.body;
+    // Déterminer le rôle de l'utilisateur
+    const role = username === 'admin' ? 'admin' : 'user';
     console.log("Username:", username);
     console.log("Password:", password);
 
@@ -105,8 +107,7 @@ function register(req, res) {
                 return res.status(500).send("Erreur lors de l'enregistrement");
             }
 
-            // Déterminer le rôle de l'utilisateur
-            const role = username === 'admin' ? 'admin' : 'user';
+            
 
             const newUser = new User(null, username, hash, role);
             const query = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
@@ -133,11 +134,12 @@ function addProduit (req, res, produit) {
     console.log(produit)
     const { titre, description, prix } = req.body;
     
+    
     console.log("Titre :", titre);
     console.log("Description :", description);
     console.log("Prix :", prix);
 
-    const newproduit =  new Produit (null, titre, description, prix)
+    const newproduit =  new Produit (null, titre,null, description, prix)
     const query = 'INSERT INTO produits (titre,image, description, prix) VALUES (?, ?, ?, ?)';
     db.run(query, [newproduit.titre,newproduit.image, newproduit.description, newproduit.prix], function(err) {
         if (err) {
@@ -149,6 +151,22 @@ function addProduit (req, res, produit) {
         }
     }) 
 };
+
+function getAdmin (req, res, username ) {
+console.log('Paramètre requête', username);
+const query = "SELECT * FROM users WHERE role = 'admin'";
+db.get(query, (err) => {
+    if (err) {
+        console.error("Erreur lors de la récupération de l'administrateur :", err.message);
+        res.status(500).send("Erreur lors de la récupération de l'administrateur");
+    
+            }
+            else {
+                res.send(gestionView());
+            }
+     } );}
+            
+    
 
 function adminDeleteProduit(req, res, produitId) {
     const query = 'DELETE FROM produits WHERE id = ?';
@@ -162,11 +180,12 @@ function adminDeleteProduit(req, res, produitId) {
     });
 }
 
-function validateProduit (req, res, username, produitId) {
-    const query ='UPDATE produits WHERE id = ? AND statut = "en attente"';
-    db.run(query, [produitId], [username], function(err) {
+function validateProduit (req, res) {
+    const {produitId} = req.body;
+    const query ='UPDATE produits SET statut = "validé" WHERE id = ? AND statut = "en attente"';
+    db.run(query, [produitId], function(err) {
         if(err) {
-            console.log('annonce non trouvée :', err.message)
+            console.log('erreur validation:', err.message)
             res.status(500).send('Erreur de validation')
         }else {
             res.send("annonce validée")
@@ -175,4 +194,4 @@ function validateProduit (req, res, username, produitId) {
 }
 
 
-module.exports = { getUser, showLogin, traiteLogin, showRegister, register, showProduit, addProduit, headerView, adminDeleteProduit, validateProduit };
+module.exports = { getUser, showLogin, traiteLogin, showRegister, register, showProduit, addProduit, headerView,getAdmin, adminDeleteProduit, validateProduit };

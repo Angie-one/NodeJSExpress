@@ -1,15 +1,18 @@
 const jwt = require('jsonwebtoken');
-const secretKey = process.env.JWT_SECRET || 'CodeuseFoireuse';
+const secretKey = 'CodeuseFoireuse';
 
 function authenticateToken(req, res, next) {
     const token = req.cookies.token;
+    console.log('verification token :', token)
     if (token == null) return res.sendStatus(401);
 
-    jwt.verify(token, secretKey, (err, user) => {
-        if (err) return res.sendStatus(403);
+    try {
+        const user = jwt.verify (token, secretKey)
         req.user = user;
-        next();
-    });
+        next()
+    } catch (error) {
+        return res.status(403).send("acces non autorisé");
+    }
 }
 
 module.exports = authenticateToken;

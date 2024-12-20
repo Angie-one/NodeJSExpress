@@ -5,7 +5,7 @@ class Produit {
         this.image=image;
         this.description=description;
         this.prix=prix;
-        this.username_id=username_id;
+        
 
     }
 }
